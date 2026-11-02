@@ -2,6 +2,13 @@
 
 API local para consultar e filtrar execuções de pipelines. O conjunto de dados atual é **demonstrativo**, não consulta GitHub Actions em tempo real. Endpoints: `GET /health` e `GET /api/pipelines?status=success|failure|running`.
 
+O filtro opcional `repository` busca parte do nome sem diferenciar maiúsculas de minúsculas e pode ser combinado com `status`. O endpoint `GET /api/summary` informa o total, as contagens por estado e a taxa de sucesso das execuções concluídas. Quando não há execuções concluídas, `successRate` é `null`.
+
+```bash
+curl 'http://127.0.0.1:3000/api/pipelines?status=failure&repository=web'
+curl http://127.0.0.1:3000/api/summary
+```
+
 ## Estado
 
 **MVP funcional / projeto inicial de portfólio.** Implementa o núcleo descrito abaixo, mas não é produto pronto para produção.
