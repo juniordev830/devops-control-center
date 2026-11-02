@@ -18,11 +18,27 @@ export function createApp(pipelines = samplePipelines) {
     }
     if (url.pathname === '/api/pipelines') {
       const status = url.searchParams.get('status');
+      const repository = (url.searchParams.get('repository') ?? '').trim().toLowerCase();
       if (status && !['success', 'failure', 'running'].includes(status)) {
         res.writeHead(400); res.end(JSON.stringify({ error: 'invalid status' })); return;
       }
-      const entries = status ? pipelines.filter(item => item.status === status) : pipelines;
+      if (repository.length > 100) {
+        res.writeHead(400); res.end(JSON.stringify({ error: 'repository filter too long' })); return;
+      }
+      const entries = pipelines.filter(item =>
+        (!status || item.status === status) &&
+        (!repository || item.repository.toLowerCase().includes(repository))
+      );
       res.end(JSON.stringify({ demo: true, pipelines: entries })); return;
+    }
+    if (url.pathname === '/api/summary') {
+      const counts = { success: 0, failure: 0, running: 0 };
+      for (const pipeline of pipelines) {
+        if (Object.hasOwn(counts, pipeline.status)) counts[pipeline.status]++;
+      }
+      const completed = counts.success + counts.failure;
+      const successRate = completed ? Math.round((counts.success / completed) * 10000) / 100 : null;
+      res.end(JSON.stringify({ demo: true, total: pipelines.length, counts, successRate })); return;
     }
     res.writeHead(404); res.end(JSON.stringify({ error: 'not found' }));
   });
