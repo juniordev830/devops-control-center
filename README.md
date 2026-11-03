@@ -1,39 +1,26 @@
-# DevOps Control Center
+# Cloud DevOps Lab
 
-API local para consultar e filtrar execuções de pipelines. O conjunto de dados atual é **demonstrativo**, não consulta GitHub Actions em tempo real. Endpoints: `GET /health` e `GET /api/pipelines?status=success|failure|running`.
+Laboratório prático de engenharia de plataformas: ambientes reproduzíveis, containers e automação de validação. **Não é um monitor de GitHub Actions**: o Codax concentra o monitoramento de repositórios.
 
-O filtro opcional `repository` busca parte do nome sem diferenciar maiúsculas de minúsculas e pode ser combinado com `status`. O endpoint `GET /api/summary` informa o total, as contagens por estado e a taxa de sucesso das execuções concluídas. Quando não há execuções concluídas, `successRate` é `null`.
+## Objetivos
+- Construir ambientes de desenvolvimento locais isolados com Docker Compose.
+- Validar infraestrutura e aplicações com pipelines CI.
+- Demonstrar boas práticas de health checks, configuração e documentação.
 
-```bash
-curl 'http://127.0.0.1:3000/api/pipelines?status=failure&repository=web'
-curl http://127.0.0.1:3000/api/summary
-```
-
-## Estado
-
-**MVP funcional / projeto inicial de portfólio.** Implementa o núcleo descrito abaixo, mas não é produto pronto para produção.
-
-## Como executar
+## Primeiro laboratório: serviço de demonstração
 
 ```bash
-npm start
+docker compose -f labs/hello-service/compose.yaml up --build
+curl http://127.0.0.1:8080/health
+docker compose -f labs/hello-service/compose.yaml down
 ```
 
-## Testes
+Requisitos: Docker Engine e Compose v2. A porta publicada fica vinculada a 127.0.0.1; nenhuma chave é necessária.
 
-```bash
-npm test
-```
+## Estrutura de migração
 
-O GitHub Actions executa os testes automaticamente em pushes e pull requests.
+O projeto original tinha uma API de pipelines com dados demonstrativos. Esta branch inicia sua substituição por um laboratório de infraestrutura. Os arquivos legados ainda podem existir durante a migração; **não representam o produto final**. Não há implantação em nuvem ativa nem custos provisionados.
 
-## Segurança e limitações
+## Próximas entregas
 
-Escuta somente em `127.0.0.1`. Nenhuma credencial GitHub é solicitada; dados são fictícios. Ainda sem frontend, autenticação ou banco de dados.
-
-## Evolução planejada
-
-Adicionar cliente GitHub Actions de leitura com token de escopo mínimo, autenticação e painel React/TypeScript.
-
----
-Projeto de Engenharia de Software mantido na conta [juniordev830](https://github.com/juniordev830).
+Testes automatizados dos manifestos, matriz de ambientes e templates de infraestrutura como código. Toda implantação remota exigirá credenciais e autorização específicas.
