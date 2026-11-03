@@ -4,6 +4,11 @@ services:
     ports:
       - "127.0.0.1:8080:8080"
     read_only: true
+    init: true
+    restart: unless-stopped
+    pids_limit: 100
+    mem_limit: 128m
+    cpus: 0.5
     cap_drop:
       - ALL
     security_opt:
