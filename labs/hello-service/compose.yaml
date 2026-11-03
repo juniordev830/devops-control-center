@@ -1,6 +1,8 @@
 services:
   hello:
     build: .
+    environment:
+      LAB_ENVIRONMENT: ${LAB_ENVIRONMENT:-local}
     ports:
       - "127.0.0.1:${LAB_PORT:-8080}:8080"
     read_only: true
