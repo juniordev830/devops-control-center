@@ -37,6 +37,13 @@ Requisitos: Docker Engine e Compose v2. A porta publicada fica vinculada a 127.0
 
 O projeto original tinha uma API de pipelines com dados demonstrativos. Esta branch inicia sua substituição por um laboratório de infraestrutura. A API legada de pipelines e seus testes foram removidos nesta branch. O histórico Git permanece disponível. Não há implantação em nuvem ativa nem custos provisionados.
 
+
+## Pipeline e validação contínua
+
+A integração contínua executa testes Node, valida configurações dos três perfis, constrói o container, executa smoke tests de homologação e verifica o endpoint de saúde e os limites de recursos do Docker. Consulte [GitHub Actions](../../actions) para evidências de execução. Cada execução ocorre nos runners do GitHub e não exige manter este chat aberto.
+
+**Segurança operacional:** homologação é uma simulação local no runner, não uma implantação pública. O perfil de produção também é uma simulação; nenhuma implantação real é acionada automaticamente. Aprovação de produção e provisionamento em nuvem dependem de configuração e autorização separadas.
+
 ## Próximas entregas
 
 Testes automatizados dos manifestos, matriz de ambientes e templates de infraestrutura como código. Toda implantação remota exigirá credenciais e autorização específicas.
