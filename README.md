@@ -21,7 +21,7 @@ flowchart LR
   D --> H[Local / Staging / Produção simulada]
 ```
 
-**Estado do projeto:** CI e homologação simulada implementados; painel gráfico, Terraform e aprovação manual de produção ainda em desenvolvimento. Nenhuma nuvem paga foi provisionada.
+**Estado do projeto:** CI e homologação simulada implementados; workflow de simulação manual de produção incluído; painel gráfico, Terraform e configuração de aprovação humana continuam pendentes. Nenhuma nuvem paga foi provisionada.
 
 Laboratório prático de engenharia de plataformas: ambientes reproduzíveis, containers e automação de validação. **Não é um monitor de GitHub Actions**: o Codax concentra o monitoramento de repositórios.
 
@@ -69,4 +69,4 @@ A integração contínua executa testes Node e `node scripts/verify-environments
 
 ## Próximas entregas
 
-Simulação manual de produção, painel de infraestrutura e templates de infraestrutura como código. Toda implantação remota exigirá credenciais e autorização específicas.
+Painel de infraestrutura e templates de infraestrutura como código. A [simulação manual de produção](docs/production-simulation.md) está implementada no workflow; sua disponibilidade na interface depende do registro na branch padrão e as regras de aprovação dependem da configuração do GitHub Environment. Toda implantação remota exigirá credenciais e autorização específicas.

@@ -18,6 +18,8 @@ jobs:
         run: npm test
       - name: Verify three simultaneous Docker environments
         run: node scripts/verify-environments.mjs
+      - name: Verify standalone production simulation
+        run: node scripts/verify-environments.mjs production-simulation
       - name: Clean up simulation resources
         if: always()
         shell: bash

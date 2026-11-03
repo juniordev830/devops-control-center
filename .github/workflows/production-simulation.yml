@@ -1,0 +1,50 @@
+name: Manual production simulation
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_simulation:
+        description: "Run a local Docker simulation only (no cloud deployment)"
+        type: boolean
+        required: true
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-simulation-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  validate-intent:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Require explicit simulation selection
+        env:
+          CONFIRM_SIMULATION: ${{ inputs.confirm_simulation }}
+        run: test "$CONFIRM_SIMULATION" = "true"
+
+  simulation:
+    needs: validate-intent
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: production-simulation
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test the service
+        run: npm test
+      - name: Verify production simulation on the runner
+        run: node scripts/verify-environments.mjs production-simulation
+      - name: Record simulation result
+        run: |
+          printf '%s\n' '### Production simulation passed' 'Verified Docker health, environment identity, loopback binding, hardening, resource limits and cleanup on this runner.' 'No cloud resources were provisioned or deployed.' >> "$GITHUB_STEP_SUMMARY"
+      - name: Clean up simulation resources
+        if: always()
+        run: docker compose -p "devops-production-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT" -f labs/hello-service/compose.yaml down --remove-orphans
