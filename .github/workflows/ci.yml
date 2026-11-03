@@ -25,6 +25,20 @@ jobs:
           done
           docker compose -f labs/hello-service/compose.yaml logs
           exit 1
+      - name: Verify container resource limits
+        run: |
+          container_id=$(docker compose -f labs/hello-service/compose.yaml ps -q hello)
+          test -n "$container_id"
+          docker inspect "$container_id" --format '{{json .HostConfig}}' > /tmp/hostconfig.json
+          node - <<'NODE'
+          const fs = require('node:fs');
+          const assert = require('node:assert/strict');
+          const cfg = JSON.parse(fs.readFileSync('/tmp/hostconfig.json', 'utf8'));
+          assert.equal(cfg.Memory, 134217728, 'memory limit must be 128 MiB');
+          assert.equal(cfg.NanoCpus, 500000000, 'CPU limit must be 0.5 core');
+          assert.equal(cfg.PidsLimit, 100, 'PID limit must be 100');
+          console.log('Container limits verified: 128 MiB, 0.5 CPU, 100 PIDs');
+          NODE
       - name: Stop lab
         if: always()
         run: docker compose -f labs/hello-service/compose.yaml down
