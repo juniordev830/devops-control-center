@@ -18,7 +18,7 @@ export function createApp(pipelines = samplePipelines) {
     }
     if (url.pathname.startsWith('/api/pipelines/')) {
       const rawId = url.pathname.slice('/api/pipelines/'.length);
-      if (!/^[1-9]\\d*$/.test(rawId)) {
+      if (!/^[1-9]\d*$/.test(rawId)) {
         res.writeHead(400); res.end(JSON.stringify({ error: 'invalid pipeline id' })); return;
       }
       const pipeline = pipelines.find(item => item.id === Number(rawId));
