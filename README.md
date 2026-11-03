@@ -9,6 +9,8 @@ Laboratório prático de engenharia de plataformas: ambientes reproduzíveis, co
 
 ## Primeiro laboratório: serviço de demonstração
 
+Execução sem Docker: `npm start` (porta 8080). Testes locais: `npm test`. O comando padrão agora executa o laboratório novo, não a antiga API de pipelines.
+
 ```bash
 docker compose -f labs/hello-service/compose.yaml up --build
 curl http://127.0.0.1:8080/health
