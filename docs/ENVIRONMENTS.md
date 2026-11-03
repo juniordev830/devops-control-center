@@ -20,3 +20,7 @@ docker compose -f labs/hello-service/compose.yaml down
 ## Segurança
 
 O container usa usuário não privilegiado, filesystem somente leitura, remoção de capabilities e healthcheck. Não coloque tokens em arquivos versionados. O laboratório não cria serviços AWS, Azure ou GCP automaticamente.
+
+## Limites do laboratório
+
+O Compose limita a memória do container a **128 MiB**, CPU a **0,5 núcleo** e o número de processos a **100**. Reinício automático ocorre apenas quando o serviço parar inesperadamente (`unless-stopped`). Esses limites são valores de demonstração, não um dimensionamento de produção.
