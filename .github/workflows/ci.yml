@@ -39,6 +39,18 @@ jobs:
           assert.equal(cfg.PidsLimit, 100, 'PID limit must be 100');
           console.log('Container limits verified: 128 MiB, 0.5 CPU, 100 PIDs');
           NODE
+      - name: Verify health endpoint returns valid JSON
+        run: |
+          node - <<'NODE'
+          const assert = require('node:assert/strict');
+          (async () => {
+            const response = await fetch('http://127.0.0.1:8080/health');
+            assert.equal(response.status, 200);
+            const body = await response.json();
+            assert.equal(body.status, 'ok');
+            console.log('Health endpoint JSON contract verified');
+          })().catch(error => { console.error(error); process.exitCode = 1; });
+          NODE
       - name: Stop lab
         if: always()
         run: docker compose -f labs/hello-service/compose.yaml down
