@@ -29,3 +29,29 @@ jobs:
             docker compose -p "devops-$profile-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT" -f labs/hello-service/compose.yaml down --remove-orphans || result=1
           done
           exit "$result"
+
+  browser:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install
+      - run: npm audit --audit-level=high
+      - run: npx playwright install --with-deps chromium
+      - name: Verify desktop and mobile dashboard
+        run: npm run test:browser
+      - name: Save browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dashboard-evidence-${{ github.sha }}
+          path: |
+            artifacts/
+            test-results/
+            package-lock.json
+          retention-days: 14

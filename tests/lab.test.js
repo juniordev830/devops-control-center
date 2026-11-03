@@ -68,3 +68,27 @@ test('invalid environment names fail before opening a listener', () => {
     assert.throws(() => createLabServer({ environment }), /Invalid lab environment/);
   }
 });
+
+test('dashboard serves same-origin assets and current-instance telemetry', async () => {
+  const { server, url } = await start('production-simulation');
+  try {
+    const page = await fetch(url);
+    assert.equal(page.status, 200);
+    assert.match(page.headers.get('content-type'), /text\/html/);
+    assert.match(await page.text(), /Cloud DevOps Lab/);
+    assert.equal(page.headers.get('x-content-type-options'), 'nosniff');
+    assert.match(page.headers.get('content-security-policy'), /script-src 'self'/);
+    const script = await fetch(`${url}/dashboard.js`);
+    assert.equal(script.status, 200);
+    assert.match(script.headers.get('content-type'), /javascript/);
+    const response = await fetch(`${url}/api/runtime`);
+    assert.equal(response.status, 200);
+    const data = await response.json();
+    assert.equal(data.environment, 'production-simulation');
+    assert.equal(data.nodeVersion, process.versions.node);
+    assert.equal(data.status, 'ok');
+    assert.ok(data.memoryRssBytes > 0);
+    assert.ok(Number.isInteger(data.uptimeSeconds) && data.uptimeSeconds >= 0);
+    assert.ok(Number.isFinite(Date.parse(data.observedAt)));
+  } finally { await stop(server); }
+});

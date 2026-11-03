@@ -1,6 +1,6 @@
 FROM node:22-alpine
 WORKDIR /app
-COPY server.mjs ./server.mjs
+COPY server.mjs dashboard.mjs ./
 ENV LAB_HOST=0.0.0.0
 USER node
 EXPOSE 8080

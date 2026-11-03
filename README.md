@@ -21,7 +21,7 @@ flowchart LR
   D --> H[Local / Staging / Produção simulada]
 ```
 
-**Estado do projeto:** CI e homologação simulada implementados; workflow de simulação manual de produção incluído; painel gráfico, Terraform e configuração de aprovação humana continuam pendentes. Nenhuma nuvem paga foi provisionada.
+**Estado do projeto:** CI e homologação simulada implementados; workflow de simulação manual de produção e painel local implementados; Terraform e configuração de aprovação humana continuam pendentes. Nenhuma nuvem paga foi provisionada.
 
 Laboratório prático de engenharia de plataformas: ambientes reproduzíveis, containers e automação de validação. **Não é um monitor de GitHub Actions**: o Codax concentra o monitoramento de repositórios.
 
@@ -37,7 +37,7 @@ Este repositório demonstra competências práticas em **DevOps, engenharia de p
 | Integração contínua | `.github/workflows/ci.yml`: testes Node, build, execução e health checks |
 | Observabilidade inicial | Endpoint HTTP `GET /health`, validado automaticamente |
 
-**Para avaliar pelo navegador:** consulte o [teste de isolamento](scripts/verify-environments.mjs), os [testes do serviço](tests/lab.test.js) e os logs da aba **Actions**. A verificação sobe três containers simultaneamente, confere suas configurações reais e comprova que desligar homologação preserva os outros ambientes. Painel de infraestrutura e Terraform continuam pendentes.
+**Para avaliar pelo navegador:** consulte o [teste de isolamento](scripts/verify-environments.mjs), os [testes do serviço](tests/lab.test.js) e os logs da aba **Actions**. A verificação sobe três containers simultaneamente, confere suas configurações reais e comprova que desligar homologação preserva os outros ambientes. O painel local mostra métricas da própria instância; Terraform continua pendente.
 
 ## Objetivos
 - Construir ambientes de desenvolvimento locais isolados com Docker Compose.
@@ -46,7 +46,7 @@ Este repositório demonstra competências práticas em **DevOps, engenharia de p
 
 ## Primeiro laboratório: serviço de demonstração
 
-Execução sem Docker: `npm start` (porta 8080). Testes locais: `npm test`. O comando padrão agora executa o laboratório novo, não a antiga API de pipelines.
+Execução sem Docker: `npm start` (porta 8080). Abra `http://127.0.0.1:8080` para o painel. Testes locais: `npm test`. O comando padrão agora executa o laboratório novo, não a antiga API de pipelines.
 
 ```bash
 docker compose -f labs/hello-service/compose.yaml up --build
@@ -67,6 +67,20 @@ A integração contínua executa testes Node e `node scripts/verify-environments
 
 **Segurança operacional:** homologação é uma simulação local no runner, não uma implantação pública. O perfil de produção também é uma simulação; nenhuma implantação real é acionada automaticamente. Aprovação de produção e provisionamento em nuvem dependem de configuração e autorização separadas.
 
+## Painel de infraestrutura
+
+A página inicial mostra saúde HTTP, perfil atual, RSS e tempo do processo Node.js. Os dados vêm de `GET /api/runtime`, com atualização automática a cada 15 segundos. Uma consulta com falha limpa as métricas anteriores e mostra **Sem confirmação**.
+
+A tabela dos três ambientes e os limites Docker são identificados como configuração declarada. O painel não consulta os outros containers nem inventa telemetria de nuvem. Não há dependências externas de frontend.
+
+O CI inclui testes Chromium em desktop e celular, recuperação de erro e capturas reais da interface no artefato **dashboard-evidence**. Para reproduzir:
+
+```sh
+npm install
+npx playwright install chromium
+npm run test:browser
+```
+
 ## Próximas entregas
 
-Painel de infraestrutura e templates de infraestrutura como código. A [simulação manual de produção](docs/production-simulation.md) está implementada no workflow; sua disponibilidade na interface depende do registro na branch padrão e as regras de aprovação dependem da configuração do GitHub Environment. Toda implantação remota exigirá credenciais e autorização específicas.
+Templates de infraestrutura como código. A [simulação manual de produção](docs/production-simulation.md) está implementada no workflow; sua disponibilidade na interface depende do registro na branch padrão e as regras de aprovação dependem da configuração do GitHub Environment. Toda implantação remota exigirá credenciais e autorização específicas.
