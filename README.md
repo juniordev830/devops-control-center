@@ -37,7 +37,7 @@ Este repositório demonstra competências práticas em **DevOps, engenharia de p
 | Integração contínua | `.github/workflows/ci.yml`: testes Node, build, execução e health checks |
 | Observabilidade inicial | Endpoint HTTP `GET /health`, validado automaticamente |
 
-**Como avaliar em cinco minutos:** execute `npm test`; depois, com Docker instalado, execute os comandos do primeiro laboratório abaixo. Consulte a aba **Actions** para ver os testes em execução e o histórico de resultados. As etapas de múltiplos ambientes, painel de infraestrutura e Terraform estão planejadas, mas ainda não devem ser tratadas como entregues.
+**Para avaliar pelo navegador:** consulte o [teste de isolamento](scripts/verify-environments.mjs), os [testes do serviço](tests/lab.test.js) e os logs da aba **Actions**. A verificação sobe três containers simultaneamente, confere suas configurações reais e comprova que desligar homologação preserva os outros ambientes. Painel de infraestrutura e Terraform continuam pendentes.
 
 ## Objetivos
 - Construir ambientes de desenvolvimento locais isolados com Docker Compose.
@@ -63,10 +63,10 @@ O projeto original tinha uma API de pipelines com dados demonstrativos. Esta bra
 
 ## Pipeline e validação contínua
 
-A integração contínua executa testes Node, valida configurações dos três perfis, constrói o container, executa smoke tests de homologação e verifica o endpoint de saúde e os limites de recursos do Docker. Consulte [GitHub Actions](../../actions) para evidências de execução. Cada execução ocorre nos runners do GitHub e não exige manter este chat aberto.
+A integração contínua executa testes Node e `node scripts/verify-environments.mjs`: constrói e inicia os três perfis simultaneamente, verifica saúde, identidade, redes, portas, hardening e limites reais do Docker; desliga homologação, confirma a saúde dos outros perfis e remove os recursos do teste. Consulte [GitHub Actions](https://github.com/juniordev830/devops-control-center/actions) para evidências de execução. Cada execução ocorre nos runners do GitHub e não exige manter este chat aberto.
 
 **Segurança operacional:** homologação é uma simulação local no runner, não uma implantação pública. O perfil de produção também é uma simulação; nenhuma implantação real é acionada automaticamente. Aprovação de produção e provisionamento em nuvem dependem de configuração e autorização separadas.
 
 ## Próximas entregas
 
-Testes automatizados dos manifestos, matriz de ambientes e templates de infraestrutura como código. Toda implantação remota exigirá credenciais e autorização específicas.
+Simulação manual de produção, painel de infraestrutura e templates de infraestrutura como código. Toda implantação remota exigirá credenciais e autorização específicas.
