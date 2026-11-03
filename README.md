@@ -1,5 +1,28 @@
 # Cloud DevOps Lab
 
+**Portfólio de DevOps e Engenharia de Plataformas** · Node.js 22 · Docker · Docker Compose · GitHub Actions · CI/CD
+
+> **Em 60 segundos:** laboratório de containers com segurança por padrão, testes automatizados, limites de recursos e validação de três perfis de ambiente. O objetivo é demonstrar engenharia reproduzível, não anunciar infraestrutura em nuvem já implantada.
+
+[![CI](https://github.com/juniordev830/devops-control-center/actions/workflows/ci.yml/badge.svg?branch=feature%2Fcloud-devops-lab-rebuild)](https://github.com/juniordev830/devops-control-center/actions/workflows/ci.yml)
+
+**Para avaliação rápida:** [Código do laboratório](labs/hello-service/) · [Pipeline CI](.github/workflows/ci.yml) · [Perfis de ambiente](docs/environment-profiles.md) · [Execuções dos testes](https://github.com/juniordev830/devops-control-center/actions) · [Pull request de desenvolvimento](https://github.com/juniordev830/devops-control-center/pull/3)
+
+### Arquitetura em uma imagem
+
+```mermaid
+flowchart LR
+  A[Push ou Pull Request] --> B[GitHub Actions]
+  B --> C[Testes Node.js]
+  B --> D[Validação de ambientes]
+  B --> E[Build Docker]
+  E --> F[Smoke test de homologação]
+  E --> G[Health check e limites]
+  D --> H[Local / Staging / Produção simulada]
+```
+
+**Estado do projeto:** CI e homologação simulada implementados; painel gráfico, Terraform e aprovação manual de produção ainda em desenvolvimento. Nenhuma nuvem paga foi provisionada.
+
 Laboratório prático de engenharia de plataformas: ambientes reproduzíveis, containers e automação de validação. **Não é um monitor de GitHub Actions**: o Codax concentra o monitoramento de repositórios.
 
 ## Visão para recrutadores
