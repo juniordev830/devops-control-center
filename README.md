@@ -21,7 +21,7 @@ Requisitos: Docker Engine e Compose v2. A porta publicada fica vinculada a 127.0
 
 ## Estrutura de migração
 
-O projeto original tinha uma API de pipelines com dados demonstrativos. Esta branch inicia sua substituição por um laboratório de infraestrutura. Os arquivos legados ainda podem existir durante a migração; **não representam o produto final**. Não há implantação em nuvem ativa nem custos provisionados.
+O projeto original tinha uma API de pipelines com dados demonstrativos. Esta branch inicia sua substituição por um laboratório de infraestrutura. A API legada de pipelines e seus testes foram removidos nesta branch. O histórico Git permanece disponível. Não há implantação em nuvem ativa nem custos provisionados.
 
 ## Próximas entregas
 
