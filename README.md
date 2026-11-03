@@ -1,39 +1,86 @@
-# DevOps Control Center
+# Cloud DevOps Lab
 
-API local para consultar e filtrar execuções de pipelines. O conjunto de dados atual é **demonstrativo**, não consulta GitHub Actions em tempo real. Endpoints: `GET /health` e `GET /api/pipelines?status=success|failure|running`.
+**Portfólio de DevOps e Engenharia de Plataformas** · Node.js 22 · Docker · Docker Compose · GitHub Actions · CI/CD
 
-O filtro opcional `repository` busca parte do nome sem diferenciar maiúsculas de minúsculas e pode ser combinado com `status`. O endpoint `GET /api/summary` informa o total, as contagens por estado e a taxa de sucesso das execuções concluídas. Quando não há execuções concluídas, `successRate` é `null`.
+> **Em 60 segundos:** laboratório de containers com segurança por padrão, testes automatizados, limites de recursos e validação de três perfis de ambiente. O objetivo é demonstrar engenharia reproduzível, não anunciar infraestrutura em nuvem já implantada.
 
-```bash
-curl 'http://127.0.0.1:3000/api/pipelines?status=failure&repository=web'
-curl http://127.0.0.1:3000/api/summary
+[![CI](https://github.com/juniordev830/devops-control-center/actions/workflows/ci.yml/badge.svg?branch=feature%2Fcloud-devops-lab-rebuild)](https://github.com/juniordev830/devops-control-center/actions/workflows/ci.yml)
+
+**Para avaliação rápida:** [Código do laboratório](labs/hello-service/) · [Pipeline CI](.github/workflows/ci.yml) · [Perfis de ambiente](docs/environment-profiles.md) · [Execuções dos testes](https://github.com/juniordev830/devops-control-center/actions) · [Pull request de desenvolvimento](https://github.com/juniordev830/devops-control-center/pull/3)
+
+### Arquitetura em uma imagem
+
+```mermaid
+flowchart LR
+  A[Push ou Pull Request] --> B[GitHub Actions]
+  B --> C[Testes Node.js]
+  B --> D[Validação de ambientes]
+  B --> E[Build Docker]
+  E --> F[Smoke test de homologação]
+  E --> G[Health check e limites]
+  D --> H[Local / Staging / Produção simulada]
 ```
 
-## Estado
+**Estado do projeto:** CI e homologação simulada implementados; workflow de simulação manual de produção e painel local implementados; Terraform e configuração de aprovação humana continuam pendentes. Nenhuma nuvem paga foi provisionada.
 
-**MVP funcional / projeto inicial de portfólio.** Implementa o núcleo descrito abaixo, mas não é produto pronto para produção.
+Laboratório prático de engenharia de plataformas: ambientes reproduzíveis, containers e automação de validação. **Não é um monitor de GitHub Actions**: o Codax concentra o monitoramento de repositórios.
 
-## Como executar
+## Visão para recrutadores
+
+Este repositório demonstra competências práticas em **DevOps, engenharia de plataformas e automação de infraestrutura**. Cada funcionalidade tem evidências verificáveis no código e no GitHub Actions; o projeto não afirma possuir implantação em nuvem quando ela ainda não existe.
+
+| Competência | Evidência verificável |
+| --- | --- |
+| Containers e Docker Compose | `labs/hello-service/Dockerfile` e `labs/hello-service/compose.yaml` |
+| Segurança básica de containers | Usuário não-root, filesystem somente leitura, capacidades removidas e `no-new-privileges` |
+| Controle de recursos | Limites de 128 MiB, 0,5 CPU e 100 PIDs, conferidos no CI |
+| Integração contínua | `.github/workflows/ci.yml`: testes Node, build, execução e health checks |
+| Observabilidade inicial | Endpoint HTTP `GET /health`, validado automaticamente |
+
+**Para avaliar pelo navegador:** consulte o [teste de isolamento](scripts/verify-environments.mjs), os [testes do serviço](tests/lab.test.js) e os logs da aba **Actions**. A verificação sobe três containers simultaneamente, confere suas configurações reais e comprova que desligar homologação preserva os outros ambientes. O painel local mostra métricas da própria instância; Terraform continua pendente.
+
+## Objetivos
+- Construir ambientes de desenvolvimento locais isolados com Docker Compose.
+- Validar infraestrutura e aplicações com pipelines CI.
+- Demonstrar boas práticas de health checks, configuração e documentação.
+
+## Primeiro laboratório: serviço de demonstração
+
+Execução sem Docker: `npm start` (porta 8080). Abra `http://127.0.0.1:8080` para o painel. Testes locais: `npm test`. O comando padrão agora executa o laboratório novo, não a antiga API de pipelines.
 
 ```bash
-npm start
+docker compose -f labs/hello-service/compose.yaml up --build
+curl http://127.0.0.1:8080/health
+docker compose -f labs/hello-service/compose.yaml down
 ```
 
-## Testes
+Requisitos: Docker Engine e Compose v2. A porta publicada fica vinculada a 127.0.0.1; nenhuma chave é necessária.
 
-```bash
-npm test
+## Estrutura de migração
+
+O projeto original tinha uma API de pipelines com dados demonstrativos. Esta branch inicia sua substituição por um laboratório de infraestrutura. A API legada de pipelines e seus testes foram removidos nesta branch. O histórico Git permanece disponível. Não há implantação em nuvem ativa nem custos provisionados.
+
+
+## Pipeline e validação contínua
+
+A integração contínua executa testes Node e `node scripts/verify-environments.mjs`: constrói e inicia os três perfis simultaneamente, verifica saúde, identidade, redes, portas, hardening e limites reais do Docker; desliga homologação, confirma a saúde dos outros perfis e remove os recursos do teste. Consulte [GitHub Actions](https://github.com/juniordev830/devops-control-center/actions) para evidências de execução. Cada execução ocorre nos runners do GitHub e não exige manter este chat aberto.
+
+**Segurança operacional:** homologação é uma simulação local no runner, não uma implantação pública. O perfil de produção também é uma simulação; nenhuma implantação real é acionada automaticamente. Aprovação de produção e provisionamento em nuvem dependem de configuração e autorização separadas.
+
+## Painel de infraestrutura
+
+A página inicial mostra saúde HTTP, perfil atual, RSS e tempo do processo Node.js. Os dados vêm de `GET /api/runtime`, com atualização automática a cada 15 segundos. Uma consulta com falha limpa as métricas anteriores e mostra **Sem confirmação**.
+
+A tabela dos três ambientes e os limites Docker são identificados como configuração declarada. O painel não consulta os outros containers nem inventa telemetria de nuvem. Não há dependências externas de frontend.
+
+O CI inclui testes Chromium em desktop e celular, recuperação de erro e capturas reais da interface no artefato **dashboard-evidence**. Para reproduzir:
+
+```sh
+npm install
+npx playwright install chromium
+npm run test:browser
 ```
 
-O GitHub Actions executa os testes automaticamente em pushes e pull requests.
+## Próximas entregas
 
-## Segurança e limitações
-
-Escuta somente em `127.0.0.1`. Nenhuma credencial GitHub é solicitada; dados são fictícios. Ainda sem frontend, autenticação ou banco de dados.
-
-## Evolução planejada
-
-Adicionar cliente GitHub Actions de leitura com token de escopo mínimo, autenticação e painel React/TypeScript.
-
----
-Projeto de Engenharia de Software mantido na conta [juniordev830](https://github.com/juniordev830).
+Templates de infraestrutura como código. A [simulação manual de produção](docs/production-simulation.md) está implementada no workflow; sua disponibilidade na interface depende do registro na branch padrão e as regras de aprovação dependem da configuração do GitHub Environment. Toda implantação remota exigirá credenciais e autorização específicas.

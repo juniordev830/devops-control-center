@@ -1,0 +1,22 @@
+services:
+  hello:
+    build: .
+    environment:
+      LAB_ENVIRONMENT: ${LAB_ENVIRONMENT:-local}
+    ports:
+      - "127.0.0.1:${LAB_PORT:-8080}:8080"
+    read_only: true
+    init: true
+    restart: unless-stopped
+    pids_limit: 100
+    mem_limit: 128m
+    cpus: 0.5
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:8080/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 3s
+      retries: 3
