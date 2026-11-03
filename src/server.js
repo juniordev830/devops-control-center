@@ -16,6 +16,17 @@ export function createApp(pipelines = samplePipelines) {
     if (url.pathname === '/health') {
       res.end(JSON.stringify({ status: 'ok' })); return;
     }
+    if (url.pathname.startsWith('/api/pipelines/')) {
+      const rawId = url.pathname.slice('/api/pipelines/'.length);
+      if (!/^[1-9]\d*$/.test(rawId)) {
+        res.writeHead(400); res.end(JSON.stringify({ error: 'invalid pipeline id' })); return;
+      }
+      const pipeline = pipelines.find(item => item.id === Number(rawId));
+      if (!pipeline) {
+        res.writeHead(404); res.end(JSON.stringify({ error: 'pipeline not found' })); return;
+      }
+      res.end(JSON.stringify({ demo: true, pipeline })); return;
+    }
     if (url.pathname === '/api/pipelines') {
       const status = url.searchParams.get('status');
       const repository = (url.searchParams.get('repository') ?? '').trim().toLowerCase();
