@@ -35,6 +35,20 @@ jobs:
           console.log(`Validated ${env}: localhost:${port}`);
           NODE
           done
+      - name: Simulate staging deployment and smoke test
+        run: |
+          set -eu
+          COMPOSE_PROJECT_NAME=devops-staging LAB_PORT=8081 docker compose -f labs/hello-service/compose.yaml up --build -d
+          trap 'COMPOSE_PROJECT_NAME=devops-staging LAB_PORT=8081 docker compose -f labs/hello-service/compose.yaml down' EXIT
+          for i in $(seq 1 20); do
+            if curl --fail --silent http://127.0.0.1:8081/health | grep -q '"status":"ok"'; then
+              echo 'Staging smoke test passed'
+              exit 0
+            fi
+            sleep 2
+          done
+          COMPOSE_PROJECT_NAME=devops-staging LAB_PORT=8081 docker compose -f labs/hello-service/compose.yaml logs
+          exit 1
       - name: Build container lab
         run: docker compose -f labs/hello-service/compose.yaml build
       - name: Start container lab
