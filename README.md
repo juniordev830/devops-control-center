@@ -37,3 +37,9 @@ Adicionar cliente GitHub Actions de leitura com token de escopo mínimo, autenti
 
 ---
 Projeto de Engenharia de Software mantido na conta [juniordev830](https://github.com/juniordev830).
+
+## Paginação de pipelines
+
+`GET /api/pipelines` aceita `limit` (1 a 100) e `offset` (0 a 100.000), após aplicar os filtros `repository` e `status`. O retorno continua incluindo `pipelines` e agora traz `pagination: { total, offset, limit, hasNext }`. Sem parâmetros de paginação, o comportamento anterior de retornar todos os itens filtrados é preservado e `limit` no metadado é `null`.
+
+Exemplo: `GET /api/pipelines?status=success&limit=10&offset=0`. Valores malformados ou fora dos limites retornam HTTP 400.
