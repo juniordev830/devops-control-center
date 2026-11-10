@@ -36,11 +36,26 @@ export function createApp(pipelines = samplePipelines) {
       if (repository.length > 100) {
         res.writeHead(400); res.end(JSON.stringify({ error: 'repository filter too long' })); return;
       }
+      const limitRaw = url.searchParams.get('limit');
+      const offsetRaw = url.searchParams.get('offset');
+      if (limitRaw !== null && (!/^[1-9]\d*$/.test(limitRaw) || Number(limitRaw) > 100)) {
+        res.writeHead(400); res.end(JSON.stringify({ error: 'limit must be between 1 and 100' })); return;
+      }
+      if (offsetRaw !== null && (!/^(0|[1-9]\d*)$/.test(offsetRaw) || Number(offsetRaw) > 100000)) {
+        res.writeHead(400); res.end(JSON.stringify({ error: 'offset must be between 0 and 100000' })); return;
+      }
       const entries = pipelines.filter(item =>
         (!status || item.status === status) &&
         (!repository || item.repository.toLowerCase().includes(repository))
       );
-      res.end(JSON.stringify({ demo: true, pipelines: entries })); return;
+      const offset = offsetRaw === null ? 0 : Number(offsetRaw);
+      const limit = limitRaw === null ? entries.length : Number(limitRaw);
+      const page = entries.slice(offset, offset + limit);
+      res.end(JSON.stringify({
+        demo: true,
+        pipelines: page,
+        pagination: { total: entries.length, offset, limit: limitRaw === null ? null : limit, hasNext: offset + page.length < entries.length },
+      })); return;
     }
     if (url.pathname === '/api/summary') {
       const counts = { success: 0, failure: 0, running: 0 };
