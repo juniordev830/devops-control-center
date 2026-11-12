@@ -43,3 +43,7 @@ Projeto de Engenharia de Software mantido na conta [juniordev830](https://github
 `GET /api/pipelines` aceita `limit` (1 a 100) e `offset` (0 a 100.000), após aplicar os filtros `repository` e `status`. O retorno continua incluindo `pipelines` e agora traz `pagination: { total, offset, limit, hasNext }`. Sem parâmetros de paginação, o comportamento anterior de retornar todos os itens filtrados é preservado e `limit` no metadado é `null`.
 
 Exemplo: `GET /api/pipelines?status=success&limit=10&offset=0`. Valores malformados ou fora dos limites retornam HTTP 400.
+
+## Verificação antes de contribuir
+
+O [guia de validação](docs/GUIA_DE_VALIDACAO.md) descreve o estado do código, as verificações reproduzíveis e os riscos a observar ao revisar novas alterações.
