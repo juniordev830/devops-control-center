@@ -1,0 +1,5 @@
+[
+  {"name":"api","up":true,"latencyMs":82},
+  {"name":"reports","up":true,"latencyMs":700},
+  {"name":"auth","up":false,"latencyMs":0}
+]
