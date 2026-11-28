@@ -1,5 +1,7 @@
 # DevOps Control Center
 
+**Navegação** · [Estado](#estado) · [Como executar](#como-executar) · [Testes](#testes) · [Código e estudo](docs/ENGENHARIA_REVERSA.md) · [API](docs/API.md)
+
 API local para consultar e filtrar execuções de pipelines. O conjunto de dados atual é **demonstrativo**, não consulta GitHub Actions em tempo real. Endpoints: `GET /health` e `GET /api/pipelines?status=success|failure|running`.
 
 O filtro opcional `repository` busca parte do nome sem diferenciar maiúsculas de minúsculas e pode ser combinado com `status`. O endpoint `GET /api/summary` informa o total, as contagens por estado e a taxa de sucesso das execuções concluídas. Quando não há execuções concluídas, `successRate` é `null`.
@@ -47,3 +49,7 @@ Exemplo: `GET /api/pipelines?status=success&limit=10&offset=0`. Valores malforma
 ## Verificação antes de contribuir
 
 O [guia de validação](docs/GUIA_DE_VALIDACAO.md) descreve o estado do código, as verificações reproduzíveis e os riscos a observar ao revisar novas alterações.
+
+## Código e roteiro de estudo
+
+Quais partes do contrato deveriam ficar estáveis ao trocar a amostra por uma fonte real? O [guia de engenharia reversa](docs/ENGENHARIA_REVERSA.md) reúne o mapa dos módulos e uma pergunta técnica baseada no projeto.
